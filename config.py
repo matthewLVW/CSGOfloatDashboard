@@ -1,6 +1,25 @@
-# steam-inspect/config.py
-STEAM_APPID     = 730       # CS2
-CURRENCY_ID     = 1         # 1 = USD (see Steam docs for others)
-UA_HEADER       = {"User-Agent": "Mozilla/5.0 (cs2-inspect/1.0)"}
-MAX_RETRIES     = 3
-DB_PATH         = "inspect_links.db"   # optional – set to None to skip SQLite
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+DB_PATH = os.getenv("DB_PATH", "csgo_floats.db")
+LOCAL_FLOAT_API = os.getenv("LOCAL_FLOAT_API", "http://localhost:8000/float")  # if using HTTP fallback
+
+def load_bots_from_env():
+    bots = []
+    i = 1
+    while True:
+        user = os.getenv(f"BOT{i}_USER")
+        pwd = os.getenv(f"BOT{i}_PASS")
+        shared_secret = os.getenv(f"BOT{i}_SHARED_SECRET", None)
+        if user and pwd:
+            bots.append({
+                "username": user,
+                "password": pwd,
+                "shared_secret": shared_secret
+            })
+            i += 1
+        else:
+            break
+    return bots
